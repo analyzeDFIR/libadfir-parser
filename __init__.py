@@ -201,7 +201,6 @@ class BaseParser(BaseTask, metaclass=ParserMeta):
                     break
             return self
         except:
-            raise
             pass
     def parse(self):
         '''
