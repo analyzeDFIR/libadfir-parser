@@ -29,7 +29,7 @@ from construct.lib import Container
 from datetime import datetime
 
 from .common.task import BaseTask
-from .common.registry import RegistryMetaclassMixin
+from .common.patterns import RegistryMetaclassMixin
 from .utils import FileMetadataMixin, StructureProperty
 
 class ParserMeta(RegistryMetaclassMixin, type):
