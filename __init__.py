@@ -76,9 +76,9 @@ class BaseParser(BaseTask, metaclass=ParserMeta):
     '''
     Base class for creating parsers
     '''
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, stream=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.__stream = None
+        self.stream = stream
     @property
     def stream(self):
         '''
@@ -224,8 +224,8 @@ class ByteParser(BaseParser):
     '''
     Class for parsing byte streams
     '''
-    def __init__(self, source):
-        super().__init__()
+    def __init__(self, source, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.source = source
     @property
     def source(self):
@@ -254,8 +254,8 @@ class FileParser(FileMetadataMixin, BaseParser):
     '''
     Class for parsing file streams
     '''
-    def __init__(self, source):
-        super().__init__()
+    def __init__(self, source, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.source = source
     @property
     def source(self):
