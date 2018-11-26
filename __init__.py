@@ -43,10 +43,20 @@ class ParserMeta(RegistryMetaclassMixin, type):
         '''
         @RegistryMetaclassMixin._create_class
         '''
-        if attrs.get('_PROPERTIES') is None:
-            attrs['_PROPERTIES'] = OrderedDict()
-        properties = attrs.get('_PROPERTIES')
-        # NOTE: does not include properties from parent classes
+        attrs['_PROPERTIES'] = OrderedDict()
+        properties  = attrs.get('_PROPERTIES')
+        current_idx = 0
+        for base in bases:
+            if hasattr(base, '_PROPERTIES'):
+                for prop in base._PROPERTIES:
+                    properties[prop] = base._PROPERTIES.get(prop)
+                    properties.get(prop).idx = current_idx
+                    current_idx += 1
+                    new_property = property(
+                        properties.get(prop).get_property,
+                        properties.get(prop).set_property
+                    )
+                    attrs[prop] = new_property
         for key, value in sorted(
             [(key, value) for key, value in attrs.items() if isinstance(value, StructureProperty)], 
             key=lambda pair: pair[1].idx
@@ -54,6 +64,8 @@ class ParserMeta(RegistryMetaclassMixin, type):
             if isinstance(value, StructureProperty):
                 new_property = property(value.get_property, value.set_property)
                 properties[key] = value
+                properties.get(key).idx = current_idx
+                current_idx += 1
                 attrs[key] = new_property
         return super()._create_class(name, bases, attrs)
     @classmethod
