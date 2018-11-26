@@ -287,17 +287,15 @@ class SequenceByteParser(ByteParser):
     '''
     records = StructureProperty(1, 'records')
 
-    def __init__(self, *args, record_parser, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.__record_parser = record_parser
-    def _parse_records(self, *args, stream=None, **kwargs):
+    def _parse_records(self, stream=None):
         '''
         Args:
             @ByteParser.parse_structure
-        Procedure:
-            Parse the records in this sequence and
-            bind them as sequence (should use generator in
-            most situations) to self.records
+        Returns:
+            Sequence<Any>
+            Parse records from source byte stream and
+            return sequence (should use generator in
+            most situations)
         Preconditions:
             @ByteParser.parse_structure
         '''
@@ -310,17 +308,15 @@ class SequenceFileParser(FileParser):
     '''
     records = StructureProperty(1, 'records')
 
-    def __init__(self, *args, record_parser, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.__record_parser = record_parser
-    def _parse_records(self, *args, stream=None, **kwargs):
+    def _parse_records(self, stream=None):
         '''
         Args:
             @FileParser.parse_structure
-        Procedure:
-            Parse the records in this sequence and
-            bind them as sequence (should use generator in
-            most situations) to self.records
+        Returns:
+            Sequence<Any>
+            Parse records from source file and
+            return sequence (should use generator in
+            most situations)
         Preconditions:
             @FileParser.parse_structure
         '''
