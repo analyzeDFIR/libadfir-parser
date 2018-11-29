@@ -134,7 +134,8 @@ class BaseParser(BaseTask, metaclass=ParserMeta):
         @BaseTask._preamble
         '''
         super()._preamble()
-        self.create_stream(persist=True)
+        if self.stream is None:
+            self.create_stream(persist=True)
     def _parse_continue(self, structure, result):
         '''
         Args:
@@ -296,6 +297,19 @@ class SequenceByteParser(ByteParser):
             Parse records from source byte stream and
             return sequence (should use generator in
             most situations)
+            NOTE:
+                If this method returns a generator, you must override the
+                _preamble and _postamble methods and call super()._{preamble, postamble}
+                from within the function for the generator to open and close the file
+                while generating the records (instead of while executing the parse method.
+                Implementations should look something like the following:
+                -----
+                super()._preamble()
+                try:
+                    <record generation code here>
+                finally:
+                    super()._postamble()
+                -----
         Preconditions:
             @ByteParser.parse_structure
         '''
@@ -317,6 +331,19 @@ class SequenceFileParser(FileParser):
             Parse records from source file and
             return sequence (should use generator in
             most situations)
+            NOTE:
+                If this method returns a generator, you must override the
+                _preamble and _postamble methods and call super()._{preamble, postamble}
+                from within the function for the generator to open and close the file
+                while generating the records (instead of while executing the parse method.
+                Implementations should look something like the following:
+                -----
+                super()._preamble()
+                try:
+                    <record generation code here>
+                finally:
+                    super()._postamble()
+                -----
         Preconditions:
             @FileParser.parse_structure
         '''
