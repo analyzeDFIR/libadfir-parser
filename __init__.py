@@ -281,30 +281,3 @@ class FileParser(FileMetadataMixin, BaseParser):
         if persist:
             self.stream = stream
         return stream
-
-class SequenceParserMixin(object):
-    '''
-    Mixin class for parsing streams
-    constructed of a sequence of records
-    '''
-    def _parse_records(self, stream=None):
-        '''
-        Args:
-            @BaseParser.parse_structure
-        Returns:
-            Sequence<Any>
-            Parse records from source stream and
-            return sequence (should use generator in
-            most situations)
-            NOTE:
-                Implementing classes should have a StructureProperty 
-                attribute that mimics the following:
-                records = StructureProperty(1, 'records')
-                
-                This class is intended to be used with the above parser classes and
-                should be used like the following:
-                class NewSequenceParser(SequenceParserMixin, ParserClass)
-        Preconditions:
-            @BaseParser.parse_structure
-        '''
-        raise NotImplementedError('_parse_records not implemented for type %s'%type(self).__name__)
