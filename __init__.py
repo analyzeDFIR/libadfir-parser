@@ -220,6 +220,7 @@ class BaseParser(BaseTask, metaclass=ParserMeta):
         @BaseTask.run
         '''
         self.run()
+        return self
 
 class ByteParser(BaseParser):
     '''
