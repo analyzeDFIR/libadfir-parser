@@ -281,70 +281,29 @@ class FileParser(FileMetadataMixin, BaseParser):
             self.stream = stream
         return stream
 
-class SequenceByteParser(ByteParser):
+class SequenceParserMixin(object):
     '''
-    Class for parsing byte streams
+    Mixin class for parsing streams
     constructed of a sequence of records
     '''
-    records = StructureProperty(1, 'records')
-
     def _parse_records(self, stream=None):
         '''
         Args:
-            @ByteParser.parse_structure
+            @BaseParser.parse_structure
         Returns:
             Sequence<Any>
-            Parse records from source byte stream and
+            Parse records from source stream and
             return sequence (should use generator in
             most situations)
             NOTE:
-                If this method returns a generator, you must override the
-                _preamble and _postamble methods and call super()._{preamble, postamble}
-                from within the function for the generator to open and close the file
-                while generating the records (instead of while executing the parse method.
-                Implementations should look something like the following:
-                -----
-                super()._preamble()
-                try:
-                    <record generation code here>
-                finally:
-                    super()._postamble()
-                -----
+                Implementing classes should have a StructureProperty 
+                attribute that mimics the following:
+                records = StructureProperty(1, 'records')
+                
+                This class is intended to be used with the above parser classes and
+                should be used like the following:
+                class NewSequenceParser(SequenceParserMixin, ParserClass)
         Preconditions:
-            @ByteParser.parse_structure
-        '''
-        raise NotImplementedError('_parse_records not implemented for type %s'%type(self).__name__)
-
-class SequenceFileParser(FileParser):
-    '''
-    Class for parsing file streams
-    constructed of a sequence of records
-    '''
-    records = StructureProperty(1, 'records')
-
-    def _parse_records(self, stream=None):
-        '''
-        Args:
-            @FileParser.parse_structure
-        Returns:
-            Sequence<Any>
-            Parse records from source file and
-            return sequence (should use generator in
-            most situations)
-            NOTE:
-                If this method returns a generator, you must override the
-                _preamble and _postamble methods and call super()._{preamble, postamble}
-                from within the function for the generator to open and close the file
-                while generating the records (instead of while executing the parse method.
-                Implementations should look something like the following:
-                -----
-                super()._preamble()
-                try:
-                    <record generation code here>
-                finally:
-                    super()._postamble()
-                -----
-        Preconditions:
-            @FileParser.parse_structure
+            @BaseParser.parse_structure
         '''
         raise NotImplementedError('_parse_records not implemented for type %s'%type(self).__name__)
