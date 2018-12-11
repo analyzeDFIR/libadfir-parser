@@ -185,11 +185,11 @@ class StructureProperty(object):
             deps=['file_info', 'volumes_info']
         )
     '''
-    def __init__(self, idx, name, deps=None, read_only=False):
+    def __init__(self, idx, name, deps=None, dynamic=False):
         self.idx = idx
         self.name = name
         self.deps = deps
-        self.read_only = read_only
+        self.dynamic = dynamic
     @property
     def idx(self):
         '''
@@ -230,18 +230,18 @@ class StructureProperty(object):
         assert value is None or isinstance(value, list)
         self.__deps = value
     @property
-    def read_only(self):
+    def dynamic(self):
         '''
-        Getter for read_only
+        Getter for dynamic
         '''
-        return self.__read_only
-    @read_only.setter
-    def read_only(self, value):
+        return self.__dynamic
+    @dynamic.setter
+    def dynamic(self, value):
         '''
-        Setter for read_only
+        Setter for dynamic
         '''
         assert isinstance(value, bool)
-        self.__read_only = value
+        self.__dynamic = value
     def _check_dependencies(self, obj):
         '''
         Args:
@@ -271,9 +271,9 @@ class StructureProperty(object):
             raise AttributeError('object of type %s does not have property %s'%(type(obj), self.name))
         elif not self._check_dependencies(obj):
             raise AttributeError('dependencies not met for property %s (%s)'%(self.name, ', '.join(self.deps)))
-        elif not hasattr(obj, prop):
-            return None
-        return getattr(obj, prop)
+        if self.dynamic:
+            return obj.parse_structure(self.name)
+        return getattr(obj, prop, None)
     def set_property(self, obj, value):
         '''
         Args:
@@ -284,7 +284,7 @@ class StructureProperty(object):
         Preconditions:
             obj is an instance of a class or Class
         '''
-        if self.read_only:
+        if self.dynamic:
             raise AttributeError('property %s is read-only'%self.name)
         try:
             setattr(obj, '__%s'%self.name, value)
@@ -297,6 +297,6 @@ class StructureProperty(object):
                 repr(self.idx),
                 "'" + self.name + "'",
                 'deps=%s'%repr(self.deps),
-                'read_only=%s'%repr(self.read_only)
+                'dynamic=%s'%repr(self.dynamic)
             ])
         )
