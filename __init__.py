@@ -201,6 +201,7 @@ class BaseParser(BaseTask, metaclass=ParserMeta):
         '''
         if self.stream is None:
             self.create_stream(persist=True)
+        return self
     def __exit__(self):
         '''
         Args:
