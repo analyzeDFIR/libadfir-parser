@@ -108,7 +108,7 @@ def contexted(*args):
                     return f(self, *args, **kwargs)
                 finally:
                     if close:
-                        self.__exit__()
+                        self.__exit__(None, None, None)
             else:
                 raise TypeError(
                     '%s does not implement the context manager interface'%type(self).__name__
@@ -226,7 +226,7 @@ class BaseParser(BaseTask, metaclass=ParserMeta):
         @BaseTask._postamble
         '''
         super()._postamble()
-        self.__exit__()
+        self.__exit__(None, None, None)
     @contexted
     def parse_structure(self, structure, *args, **kwargs):
         '''
