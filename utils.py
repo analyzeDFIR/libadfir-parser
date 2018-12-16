@@ -69,7 +69,7 @@ class WindowsTime(object):
         try:
             return datetime.fromtimestamp(
                 ( float(self._high) * 2 ** 32 + self._low ) * 1e-7 - 11644473600,
-                tz=timezone.utc
+                tz=tzutc()
             )
         except:
             return None
