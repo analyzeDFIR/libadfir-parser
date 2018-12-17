@@ -58,6 +58,7 @@ class ParserMeta(RegistryMetaclassMixin, type):
                         properties.get(prop).set_property
                     )
                     attrs[prop] = new_property
+                    attrs[prop.upper()] = properties.get(prop).name
         for key, value in sorted(
             [(key, value) for key, value in attrs.items() if isinstance(value, StructureProperty)], 
             key=lambda pair: pair[1].idx
@@ -67,6 +68,7 @@ class ParserMeta(RegistryMetaclassMixin, type):
             properties.get(key).idx = current_idx
             current_idx += 1
             attrs[key] = new_property
+            attrs[key.upper()] = properties.get(key).name
         return super()._create_class(name, bases, attrs)
     @classmethod
     def _add_class(cls, name, new_cls):
