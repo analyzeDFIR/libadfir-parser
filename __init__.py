@@ -184,12 +184,31 @@ class BaseParser(BaseTask, metaclass=ParserMeta):
             structure: String   => structure parsed
             result: Any         => result from parsing property
         Procedure:
-            Determine whether the parser should continue
+            Determine whether the parser should continue.  By default,
+            if a structure failed to parse and other structures depend on 
+            it, will return False.
         Preconditions:
             structure is of type String
             result is of type Any
         '''
         assert isinstance(structure, str)
+        if (
+            isinstance(result, dict) and \
+            isinstance(result.get('err'), Exception)
+        ):
+            for prop in self._PROPERTIES.values():
+                if (
+                    prop.name != structure and \
+                    prop.deps is not None and \
+                    structure in prop.deps
+                ):
+                    Logger.error(
+                        'Property %s depends on %s, aborting parsing task'%(
+                            prop.name, 
+                            structure
+                        )
+                    )
+                    return False
         return True
     def __enter__(self):
         '''
@@ -285,7 +304,8 @@ class BaseParser(BaseTask, metaclass=ParserMeta):
                         setattr(self, prop.name, result)
                     except Exception as e:
                         Logger.error('Failed to parse structure %s (%s)'%(prop.name, str(e)))
-                        result = dict(prop=prop, err=e)
+                        result = dict(err=e)
+                        setattr(self, prop.name, None)
                     if not self._parse_continue(prop.name, result):
                         break
             return self
