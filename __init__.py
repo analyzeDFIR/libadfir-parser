@@ -154,20 +154,17 @@ class BaseParser(BaseTask, metaclass=ParserMeta):
             serialize is of type Boolean
         '''
         assert isinstance(serialize, bool)
+        cleaned = value
         if issubclass(type(value), Container):
-            cleaned_value = Container(value)
-            for key in cleaned_value:
-                if key.startswith('Raw') or key.startswith('_'):
-                    del cleaned_value[key]
-                else:
-                    cleaned_value[key] = self._clean_value(cleaned_value[key], serialize)
-            return cleaned_value
+            cleaned = Container()
+            for key in value.keys():
+                if not (key.startswith('Raw') or key.startswith('_')):
+                    cleaned[key] = self._clean_value(value[key], serialize)
         elif isinstance(value, list):
-            return list(map(lambda entry: self._clean_value(entry, serialize), value))
+            cleaned = list(map(lambda entry: self._clean_value(entry, serialize), value))
         elif isinstance(value, datetime) and serialize:
-            return value.strftime('%Y-%m-%d %H:%M:%S.%f%z')
-        else:
-            return value
+            cleaned = value.strftime('%Y-%m-%d %H:%M:%S.%f%z')
+        return cleaned
     def create_stream(self, persist=False):
         '''
         Args:
