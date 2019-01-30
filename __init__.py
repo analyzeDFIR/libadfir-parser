@@ -308,9 +308,12 @@ class BaseParser(BaseTask, metaclass=ParserMeta):
                         setattr(self, prop.name, None)
                     if not self._parse_continue(prop.name, result):
                         break
-            return self
-        except:
-            pass
+        except Exception as e:
+            Logger.error('Unexpected exception while parsing %s (%s)'%(
+                type(self).__name__,
+                str(e)
+            ))
+        return self
     def parse(self):
         '''
         @BaseTask.run
