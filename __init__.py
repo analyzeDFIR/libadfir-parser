@@ -125,9 +125,23 @@ class BaseParser(BaseTask, metaclass=ParserMeta):
     '''
     Base class for creating parsers
     '''
-    def __init__(self, *args, stream=None, **kwargs):
+    def __init__(self, source, *args, stream=None, **kwargs):
         super().__init__(*args, **kwargs)
+        self.source = source
         self.stream = stream
+    @property
+    def source(self):
+        '''
+        Getter for source
+        '''
+        return self.__source
+    @source.setter
+    def source(self, value):
+        '''
+        Setter for source
+        '''
+        assert isinstance(value, (str, bytes, bytearray))
+        self.__source = value
     @property
     def stream(self):
         '''
@@ -282,7 +296,7 @@ class BaseParser(BaseTask, metaclass=ParserMeta):
         for kwarg in kwargs:
             if kwarg != structure and kwarg in self._PROPERTIES:
                 kwargs[kwarg] = getattr(self, kwarg)
-        return getattr(self, parser)(*args, **kwargs)
+        return self._clean_value(getattr(self, parser)(*args, **kwargs))
     def _process_task(self):
         '''
         Args:
@@ -317,27 +331,21 @@ class BaseParser(BaseTask, metaclass=ParserMeta):
         '''
         self.run()
         return self
+    def __repr__(self):
+        return '%s(%s, stream=%s)'%(
+            type(self).__name__,
+            repr(self.source),
+            repr(self.stream)
+        )
+    def __str__(self):
+        return str(Container(
+            **{key:str(getattr(self, prop)) for key,prop in self._PROPERTIES}
+        ))
 
 class ByteParser(BaseParser):
     '''
     Class for parsing byte streams
     '''
-    def __init__(self, source, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.source = source
-    @property
-    def source(self):
-        '''
-        Getter for source
-        '''
-        return self.__source
-    @source.setter
-    def source(self, value):
-        '''
-        Setter for source
-        '''
-        assert isinstance(value, (bytes, bytearray))
-        self.__source = value
     def create_stream(self, persist=False):
         '''
         @BaseParser.create_stream
@@ -352,22 +360,6 @@ class FileParser(FileMetadataMixin, BaseParser):
     '''
     Class for parsing file streams
     '''
-    def __init__(self, source, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.source = source
-    @property
-    def source(self):
-        '''
-        Getter for source
-        '''
-        return self.__source
-    @source.setter
-    def source(self, value):
-        '''
-        Setter for source
-        '''
-        assert isinstance(value, str)
-        self.__source = value
     def create_stream(self, persist=False):
         '''
         @BaseParser.create_stream
