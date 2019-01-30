@@ -339,7 +339,7 @@ class BaseParser(BaseTask, metaclass=ParserMeta):
         )
     def __str__(self):
         return str(Container(
-            **{key:str(getattr(self, prop)) for key,prop in self._PROPERTIES}
+            **{key:str(getattr(self, prop)) for key,prop in self._PROPERTIES.items()}
         ))
 
 class ByteParser(BaseParser):
